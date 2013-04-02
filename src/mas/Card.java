@@ -88,7 +88,7 @@ public class Card {
     public Image getImage()
     {
         if (image == null) {
-            File imageFile = new File("../Images/" + getCode() + ".png");
+            File imageFile = new File("assets/images/" + getCode() + ".png");
         
             try {
                 image = ImageIO.read(imageFile);
