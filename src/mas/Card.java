@@ -33,15 +33,6 @@ public class Card {
     {
         this.type = type;
         this.suit = suit;
-        
-        File imageFile = new File("../Images/" + getCode() + ".png");
-        
-        try {
-            image = ImageIO.read(imageFile);
-        } catch (IOException e) {
-            System.err.println(e.toString() + imageFile.toString());
-            // do something intelligent.
-        }
     }
     
     public Type getType()
@@ -96,6 +87,17 @@ public class Card {
     
     public Image getImage()
     {
+        if (image == null) {
+            File imageFile = new File("../Images/" + getCode() + ".png");
+        
+            try {
+                image = ImageIO.read(imageFile);
+            } catch (IOException e) {
+                System.err.println(e.toString() + imageFile.toString());
+                // do something intelligent.
+            }
+        }
+        
         return image;
     }
     
