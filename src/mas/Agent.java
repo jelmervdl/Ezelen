@@ -128,6 +128,8 @@ public class Agent {
         }
         
         refreshKnowledge();
+        
+        model.tick();
     }
     
     private void refreshKnowledge()
