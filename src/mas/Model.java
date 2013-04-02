@@ -80,7 +80,9 @@ public class Model
         });
         
         for (Predicate predicate : sortedPredicates)
-            out.append("  ").append(predicate).append("\n");
+            // don't print the boring knowledge, because that.. is boring.
+            if (!(predicate.getOperator() == Predicate.Operator.M && predicate.getName().equals("HasCard")))
+                out.append("  ").append(predicate).append("\n");
         
         return out.toString();
     }
