@@ -66,6 +66,8 @@ public class Agent {
         }
         
         refreshKnowledge();
+        
+        model.tick();
     }
     
     public void receiveCard(Card card)

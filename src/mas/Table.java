@@ -47,8 +47,10 @@ public class Table
 
         // Do we have a winner?
         for (Agent agent : agents)
-            if (agent.hasFourOfAKind())
+            if (agent.hasFourOfAKind()) {
                 win(agent);
+                return;
+            }
         
         // Tell all the agents we are going to the next round, allowing them to
         // deliberate about the other agents that they have passed cards around.
