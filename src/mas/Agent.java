@@ -5,6 +5,7 @@
 package mas;
 
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,8 +27,6 @@ public class Agent {
     
     private Table table;
     
-    private CardTypeCounter counter;
-    
     public static interface Listener
     {
         public void agentChanged(Agent agent);
@@ -46,8 +45,6 @@ public class Agent {
         this.model = new Model();
         
         this.table = table;
-        
-        this.counter = new CardTypeCounter();
     }
     
     public void initialize()
@@ -80,9 +77,10 @@ public class Agent {
         model.add(new Predicate(Predicate.Operator.K, this, "HasCard", card));
         
         // Tell the model that if the player left of me gives my a card of type X, he is probably not collecting those.
-        model.remove(new Predicate(Predicate.Operator.M, table.getPlayerLeftOf(this), "Collects", card.getType()));
+        model.remove(new Predicate(Predicate.Operator.M, null, "Collects", card.getType()));
         
-        counter.add(card.getType());
+        //Tell the model that i received a card in the last round and I know of it.
+        model.add(new Predicate(Predicate.Operator.K, this, "Received", card.getType(), model.getTime()));
         
         // Update the window.
         notifyListeners();
@@ -91,7 +89,7 @@ public class Agent {
     public Card giveCard()
     {
         // Ask strategy which card to pass on
-        Card card = strategy.decide(model, counter, hand);
+        Card card = strategy.decide(model, hand);
         
         // Remove card from my hand
         hand.remove(card);
@@ -131,6 +129,8 @@ public class Agent {
         
         refreshKnowledge();
         
+        formBeliefs();
+        
         model.tick();
     }
     
@@ -153,12 +153,43 @@ public class Agent {
                 }
             }
             
-            if (everyoneMayHaveCard) {
-                for (Agent agent : table.getAgents())
-                    if (!agent.equals(this))
-                        model.add(new Predicate(Predicate.Operator.M, agent, "Collects", card.getType()));
-            }
+            if (everyoneMayHaveCard)
+                model.add(new Predicate(Predicate.Operator.M, null, "Collects", card.getType()));
+            
         }
+        
+        // Prune old receive cards knowledge
+//        for (Predicate pred : model.getPredicates("Received")) {
+//            if ((Integer) pred.getArgument2() <= model.getTime() - 3) 
+//                model.remove(pred);
+//        }
+        
+        // Prune old beliefs about not collected types.
+        for (Predicate pred : model.getPredicates("NotCollected"))
+            if (model.getAge(pred) > 2)
+                model.remove(pred);
+    }
+    
+    private void formBeliefs()
+    {
+        EnumMap<Card.Type, Integer> counts = new EnumMap<Card.Type, Integer>(Card.Type.class);
+        
+        for (Predicate pred : model.getPredicates("Received")) {
+            int count = 1;
+            
+            // Only use newer knowledge, skip older predicates
+            if ((Integer) pred.getArgument2() < model.getTime() - 3)
+                continue;
+            
+            if (counts.containsKey((Card.Type) pred.getArgument()))
+                count = counts.get((Card.Type) pred.getArgument()) + 1;
+            
+            counts.put((Card.Type) pred.getArgument(), count);
+        }
+        
+        for (Card.Type type : counts.keySet())
+            if (counts.get(type) >= 2)
+                model.add(new Predicate(Predicate.Operator.B, null, "NotCollected", type));
     }
     
     public boolean hasFourOfAKind()

@@ -25,7 +25,7 @@ public class Strategy
         turnsSinceLastChange = 0;
     }
     
-    public Card decide(Model model, CardTypeCounter counter, Set<Card> hand)
+    public Card decide(Model model, Set<Card> hand)
     {
         // If I have no strategy yet (blank mind) don't base yourself on
         // the model.
@@ -33,11 +33,12 @@ public class Strategy
             changeStrategy(hand);
         
         // If my strategy is still smart...
-        else if (turnsSinceLastChange > 3)
-            changeStrategy(model, counter, hand);
+        else if (turnsSinceLastChange > 1)
+            changeStrategy(model, hand);
         
         turnsSinceLastChange++;
         
+        // Choose which card to pass on to the next player
         for (Card card : hand)
             if (card.getType() != collectedType)
                 return card;
@@ -45,7 +46,7 @@ public class Strategy
         return hand.iterator().next();
     }
     
-    public void changeStrategy(Model model, CardTypeCounter counter, Set<Card> hand)
+    public void changeStrategy(Model model, Set<Card> hand)
     {
         // Change my strategy to collecting this type.
         Card.Type type = mostOccurringType(hand);
@@ -54,19 +55,13 @@ public class Strategy
         if (countCardsOfType(type, hand) > 2) // && I know that not someone is pesting me
             collectType(type);
         
-        // Else, check wether the card we are collecting is passed around
-        else if (counter.count(collectedType) == 0) {
-            // If not, choose which one of the other cards to collect
-            Card.Type bestType = null;
+        // Else, see which type is not collected by anyone, and start collecting
+        // that type.
+        else {
+            Predicate pred = model.getLast("NotCollected");
             
-            for (Card card : hand) {
-                if (!card.getType().equals(collectedType)) {
-                    if (bestType == null || counter.count(card.getType()) > counter.count(bestType))
-                        bestType = card.getType();
-                }
-            }
-            
-            collectType(bestType);
+            if (pred != null)
+                collectType((Card.Type) pred.getArgument());
         }
         
         // An other strategy may be to start teasing one of the other players,

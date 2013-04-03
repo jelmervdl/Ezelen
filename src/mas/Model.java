@@ -36,8 +36,7 @@ public class Model
                 predicates.remove(known);
         }
          
-        if (!predicates.containsKey(pred))            
-            predicates.put(pred, time);
+        predicates.put(pred, time);
     }
     
     public void remove(Predicate pred)
@@ -61,9 +60,31 @@ public class Model
         return filtered;
     }
     
+    public Predicate getLast(String name)
+    {
+        Predicate latest = null;
+        
+        for (Predicate pred : predicates.keySet())
+            if (pred.getName().equals(name))
+                if (latest == null || predicates.get(pred) > predicates.get(latest))
+                    latest = pred;
+        
+        return latest;
+    }
+    
     public void tick()
     {
         time++;
+    }
+    
+    public int getTime()
+    {
+        return time;
+    }
+    
+    public int getAge(Predicate pred)
+    {
+        return time - predicates.get(pred);
     }
     
     @Override
@@ -82,7 +103,7 @@ public class Model
                 if (!a.getName().equals(b.getName()))
                     return a.getName().compareTo(b.getName());
                 
-                if (!a.getAgent().equals(b.getAgent()))
+                if (a.getAgent() != null && b.getAgent() != null && !a.getAgent().equals(b.getAgent()))
                     return a.getAgent().getName().compareTo(b.getAgent().getName());
                 
                 return a.getArgument().toString().compareTo(b.getArgument().toString());
