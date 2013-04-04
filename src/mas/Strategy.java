@@ -31,19 +31,37 @@ public class Strategy
         // the model.
         if (collectedType == null)
             changeStrategy(hand);
-        
-        // If my strategy is still smart...
-        else if (turnsSinceLastChange > 1)
+        else
             changeStrategy(model, hand);
         
-        turnsSinceLastChange++;
+//        turnsSinceLastChange++;
         
         // Choose which card to pass on to the next player
-        for (Card card : hand)
-            if (card.getType() != collectedType)
-                return card;
+        Card.Type lastReceivedType = model.getLast("Received") != null
+                ? (Card.Type) model.getLast("Received").getArgument()
+                : null;
         
-        return hand.iterator().next();
+        Card chosenCard = null;
+        
+        for (Card card : hand) {
+            if (card.getType() != collectedType) {
+                // Prefer the card we last received
+                if (lastReceivedType != null && lastReceivedType != collectedType) {
+                    if (card.getType() == lastReceivedType) {
+                        chosenCard = card;
+                        break;
+                    }
+                }
+                else {
+                    chosenCard = card;
+                    break;
+                }
+            }
+        }
+        
+        assert(chosenCard != null);
+        
+        return chosenCard;
     }
     
     public void changeStrategy(Model model, Set<Card> hand)
@@ -66,8 +84,6 @@ public class Strategy
         
         // An other strategy may be to start teasing one of the other players,
         // as model may know the strategy of one or moreof the other players.
-        
-        turnsSinceLastChange = 0;
     }
     
     public void changeStrategy(Set<Card> hand)
@@ -75,7 +91,6 @@ public class Strategy
         // Change my strategy to collecting this type.
         Card.Type type = mostOccurringType(hand);
         collectType(type);
-        turnsSinceLastChange = 0;
     }
     
     public Card.Type getCollectedType()
@@ -85,6 +100,9 @@ public class Strategy
     
     public void collectType(Card.Type type)
     {
+        if (type != collectedType)
+            turnsSinceLastChange = 0;
+        
         collectedType = type;
     }
     
