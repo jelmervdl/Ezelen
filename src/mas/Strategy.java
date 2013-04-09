@@ -25,7 +25,7 @@ public class Strategy
         turnsSinceLastChange = 0;
     }
     
-    public Card decide(Model model, Set<Card> hand)
+    public Card decide(BeliefModel model, Set<Card> hand)
     {
         // If I have no strategy yet (blank mind) don't base yourself on
         // the model.
@@ -37,50 +37,54 @@ public class Strategy
 //        turnsSinceLastChange++;
         
         // Choose which card to pass on to the next player
-        Card.Type lastReceivedType = model.getLast("Received") != null
-                ? (Card.Type) model.getLast("Received").getArgument()
-                : null;
-        
+        Card.Type lastReceivedType = model.getLastReceivedType();
         Card chosenCard = null;
         
-        for (Card card : hand) {
-            if (card.getType() != collectedType) {
-                // Prefer the card we last received
-                if (lastReceivedType != null && lastReceivedType != collectedType) {
-                    if (card.getType() == lastReceivedType) {
-                        chosenCard = card;
-                        break;
-                    }
-                }
-                else {
+        if (lastReceivedType != null && lastReceivedType != collectedType)
+        {
+            for (Card card : hand) {
+                if (card.getType() == lastReceivedType) {
                     chosenCard = card;
                     break;
                 }
             }
         }
         
-        assert(chosenCard != null);
+        // If the last received type is the collected type, choose a card at random
+        // Of if the lastReceivedType was "wrong" (e.g. none received) and it was
+        // not in my hand, choose a random card as well.
+        if (chosenCard == null)
+        {
+            for (Card card : hand) 
+            {
+                if (card.getType() != collectedType) {
+                    chosenCard = card;
+                    break;
+                }
+            }
+        }
+        
+        assert chosenCard != null : "I did not choose a card";
+        
+        // Keep track of for how long we have been using this strategy.
+        turnsSinceLastChange++;
         
         return chosenCard;
     }
     
-    public void changeStrategy(Model model, Set<Card> hand)
+    public void changeStrategy(BeliefModel model, Set<Card> hand)
     {
         // Change my strategy to collecting this type.
         Card.Type type = mostOccurringType(hand);
         
         // If I already have 3 of a type, collect this type
-        if (countCardsOfType(type, hand) > 2) // && I know that not someone is pesting me
+        if (countCardsOfType(type, hand) > 2 && turnsSinceLastChange < 8) // && I know that not someone is pesting me
             collectType(type);
         
         // Else, see which type is not collected by anyone, and start collecting
         // that type.
-        else {
-            Predicate pred = model.getLast("NotCollected");
-            
-            if (pred != null)
-                collectType((Card.Type) pred.getArgument());
-        }
+        else if (turnsSinceLastChange >= 2)
+            collectType(model.getMostLikelyNotCollectedType());
         
         // An other strategy may be to start teasing one of the other players,
         // as model may know the strategy of one or moreof the other players.
@@ -100,6 +104,8 @@ public class Strategy
     
     public void collectType(Card.Type type)
     {
+        assert type != null : "I'm trying to collect type null";
+        
         if (type != collectedType)
             turnsSinceLastChange = 0;
         
@@ -146,5 +152,12 @@ public class Strategy
         }
         
         return mostOftenOccurringType;
+    }
+    
+    @Override
+    public String toString()
+    {
+        return "I am collecting " + collectedType
+                + "\n(and have been for " + turnsSinceLastChange + " turns)";
     }
 }

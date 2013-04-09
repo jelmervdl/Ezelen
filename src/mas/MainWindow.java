@@ -30,7 +30,7 @@ public class MainWindow extends javax.swing.JFrame implements Table.Listener {
         initOverlay();
         
         this.table = table;
-        this.setSize(1300, 600);
+        this.setSize(1300, 900);
         
         windows = new ArrayList<AgentWindow>();
         
@@ -50,6 +50,8 @@ public class MainWindow extends javax.swing.JFrame implements Table.Listener {
         table.addListener(this);
         
         List<Agent> agents = table.getAgents();
+        
+        assert agents.size() <= windows.size() : "There are not enough windows for all these agents";
         
         for (int i = 0; i < agents.size(); ++i)
             windows.get(i).setAgent(agents.get(i));

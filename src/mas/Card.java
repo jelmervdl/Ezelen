@@ -111,6 +111,27 @@ public class Card {
         
         return deck;
     }
+    
+    static public ArrayList<Card> getDeck(int players)
+    {
+        ArrayList<Card> deck = new ArrayList<Card>();
+        
+        int itypes = 0;
+        for (Type type : Type.values()) {
+            if (++itypes > players)
+                break;
+                
+            int isuits = 0;
+            for (Suit suit : Suit.values()) {
+                if (++isuits > players)
+                    break;
+                
+                deck.add(new Card(type, suit));
+            }
+        }
+        
+        return deck;
+    }
 
     @Override
     public boolean equals(Object obj)

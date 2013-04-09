@@ -91,7 +91,6 @@ public class Model
     public String toString()
     {
         StringBuilder out = new StringBuilder();
-        out.append("Knowledge:\n");
         
         Predicate[] sortedPredicates = predicates.keySet().toArray(new Predicate[0]);
         Arrays.sort(sortedPredicates, new Comparator<Predicate>() {

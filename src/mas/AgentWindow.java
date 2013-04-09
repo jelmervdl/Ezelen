@@ -4,9 +4,15 @@
  */
 package mas;
 
+import java.awt.Color;
 import java.awt.Image;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
+import javax.swing.text.DefaultCaret;
 
 /**
  *
@@ -16,14 +22,21 @@ public class AgentWindow extends javax.swing.JFrame implements Agent.Listener {
 
     private Agent agent;
     
+    private Map<Card, ImageIcon> iconCache;
+    
     /**
      * Creates new form AgentWindow
      */
     public AgentWindow()
     {
+        iconCache = new HashMap<Card, ImageIcon>();
+        
         initComponents();
         
         knowledgePage.setEditable(false);
+        
+        DefaultCaret caret = (DefaultCaret) knowledgePage.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
     }
     
     public void setAgent(Agent agent)
@@ -58,9 +71,16 @@ public class AgentWindow extends javax.swing.JFrame implements Agent.Listener {
         Card[] cards = agent.getHand().toArray(new Card[0]);
         JLabel[] labels = {card1, card2, card3, card4}; 
         
+        Border border = new LineBorder(Color.blue, 1, true);
+        
         for (int i = 0; i < 4; ++i) {
+            if (cards.length > i && agent.getReceivedCard() != null && cards[i].equals(agent.getReceivedCard()))
+                labels[i].setBorder(border);
+            else
+                labels[i].setBorder(null);
+            
             if (cards.length > i)
-                labels[i].setIcon(new ImageIcon(cards[i].getImage().getScaledInstance(-1, 90, Image.SCALE_SMOOTH)));
+                labels[i].setIcon(getCardIcon(cards[i]));
             else
                 labels[i].setIcon(null);
         }
@@ -69,6 +89,18 @@ public class AgentWindow extends javax.swing.JFrame implements Agent.Listener {
     private void updateKnowledge()
     {
         knowledgePage.setText(agent.getThoughts());
+    }
+    
+    private ImageIcon getCardIcon(Card card)
+    {
+        ImageIcon icon = iconCache.get(card);
+        
+        if (icon == null) {
+            icon = new ImageIcon(card.getImage().getScaledInstance(-1, 90, Image.SCALE_SMOOTH));
+            iconCache.put(card, icon);
+        }
+        
+        return icon;
     }
 
     /**
@@ -96,7 +128,7 @@ public class AgentWindow extends javax.swing.JFrame implements Agent.Listener {
         agentName.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         agentName.setText("[Naam]");
 
-        jPanel1.setLayout(new java.awt.GridLayout());
+        jPanel1.setLayout(new java.awt.GridLayout(1, 0));
         jPanel1.add(card1);
         jPanel1.add(card2);
         jPanel1.add(card3);
@@ -118,11 +150,11 @@ public class AgentWindow extends javax.swing.JFrame implements Agent.Listener {
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 328, Short.MAX_VALUE)
-                .add(18, 18, 18)
+                .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 433, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(agentName)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 187, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 94, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 

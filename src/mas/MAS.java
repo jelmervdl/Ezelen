@@ -4,8 +4,6 @@
  */
 package mas;
 
-import java.util.ArrayList;
-
 /**
  *
  * @author jelmer
@@ -24,10 +22,5 @@ public class MAS {
         mainWindow.setTable(table);
         
         mainWindow.setVisible(true);
-        
-//        Image tinyCatPicture = new Card(Card.Type.ACE, Card.Suit.SPADES).getImage().getScaledInstance(-1, 65, Image.SCALE_SMOOTH);
-//        window.card41.setIcon(new ImageIcon(tinyCatPicture));
-//        window.card41.setText("");
-//        window.setVisible(true);
     }
 }

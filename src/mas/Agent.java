@@ -7,6 +7,7 @@ package mas;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -27,6 +28,12 @@ public class Agent {
     
     private Table table;
     
+    private BeliefModel belief;
+    
+    private BeliefModel beliefOfOthers;
+    
+    private Card receivedCard;
+    
     public static interface Listener
     {
         public void agentChanged(Agent agent);
@@ -45,6 +52,10 @@ public class Agent {
         this.model = new Model();
         
         this.table = table;
+        
+        this.belief = new BeliefModel(4);
+        
+        this.beliefOfOthers = new BeliefModel(4);
     }
     
     public void initialize()
@@ -69,6 +80,8 @@ public class Agent {
     
     public void receiveCard(Card card)
     {
+        receivedCard = card;
+        
         // Add card to our hand
         hand.add(card);
         assert(hand.size() == 4);
@@ -82,6 +95,11 @@ public class Agent {
         //Tell the model that i received a card in the last round and I know of it.
         model.add(new Predicate(Predicate.Operator.K, this, "Received", card.getType(), model.getTime()));
         
+        belief.receivedCard(card);
+        
+        // TODO SHOULDNT WE UPDATE OUR KNOWLEDGE RIGHT NOW INSTEAD OF IN THE NEXTROUND CALLBACK?
+        refreshKnowledge();
+        
         // Update the window.
         notifyListeners();
     }
@@ -89,13 +107,16 @@ public class Agent {
     public Card giveCard()
     {
         // Ask strategy which card to pass on
-        Card card = strategy.decide(model, hand);
+        Card card = strategy.decide(belief, hand);
         
         // Remove card from my hand
         hand.remove(card);
         
         // Tell model what we now know about our right neighbour
         model.add(new Predicate(Predicate.Operator.K, table.getPlayerRightOf(this), "HasCard", card));
+        
+        // Update our belief of others their beliefs about what and how
+        beliefOfOthers.receivedCard(card);
         
         // Tell all our listeners that we know things ;) ;)
         notifyListeners();
@@ -129,12 +150,29 @@ public class Agent {
         
         refreshKnowledge();
         
-        formBeliefs();
-        
         model.tick();
+        
+        notifyListeners();
     }
     
     private void refreshKnowledge()
+    {
+        // We no longer use this method of storing knowledge. Using BeliefModel
+        // is far easier.
+        // pruneBeliefs();
+        
+        // formBeliefs();
+    }
+    
+    private void pruneBeliefs()
+    {
+        // Prune old beliefs about not collected types.
+        for (Predicate pred : model.getPredicates("NotCollected"))
+            if (model.getAge(pred) > 2)
+                model.remove(pred);
+    }
+    
+    private void formBeliefs()
     {
         // If a card is by everyone now, and I still haven't received it, maybe someone is collecting it
         for (Card card : Card.getDeck())
@@ -158,20 +196,6 @@ public class Agent {
             
         }
         
-        // Prune old receive cards knowledge
-//        for (Predicate pred : model.getPredicates("Received")) {
-//            if ((Integer) pred.getArgument2() <= model.getTime() - 3) 
-//                model.remove(pred);
-//        }
-        
-        // Prune old beliefs about not collected types.
-        for (Predicate pred : model.getPredicates("NotCollected"))
-            if (model.getAge(pred) > 2)
-                model.remove(pred);
-    }
-    
-    private void formBeliefs()
-    {
         EnumMap<Card.Type, Integer> counts = new EnumMap<Card.Type, Integer>(Card.Type.class);
         
         for (Predicate pred : model.getPredicates("Received")) {
@@ -211,6 +235,11 @@ public class Agent {
         return hand;
     }
     
+    public Card getReceivedCard()
+    {
+        return receivedCard;
+    }
+    
     public String getName()
     {
         return name;
@@ -231,8 +260,34 @@ public class Agent {
     {
         StringBuilder out = new StringBuilder();
         
-        out.append("I am collecting " + strategy.getCollectedType() + "\n\n");
+        out.append(strategy.toString()).append("\n\n");
         
+        out.append("Times not passed around:\n");
+        out.append(belief.toString()).append("\n");
+        
+        out.append("I believe:\n");
+        out.append("  Most certainly collected type: ");
+        out.append(belief.getMostCertainlyCollectedType());
+        out.append("\n");
+        
+        out.append("  Most likely not collected type: ");
+        out.append(belief.getMostLikelyNotCollectedType());
+        out.append("\n\n");
+        
+        
+        out.append("Times not passed around according\nto other agents:\n");
+        out.append(beliefOfOthers.toString()).append("\n");
+        
+        out.append("I believe that they believe:\n");
+        out.append("  Most certainly collected type: ");
+        out.append(beliefOfOthers.getMostCertainlyCollectedType());
+        out.append("\n");
+        
+        out.append("  Most likely not collected type: ");
+        out.append(beliefOfOthers.getMostLikelyNotCollectedType());
+        out.append("\n\n");
+        
+        out.append("Knowledge:\n");
         out.append(model.toString());
         
         return out.toString();
