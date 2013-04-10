@@ -8,7 +8,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 /**
  *
@@ -19,8 +21,6 @@ public class MainWindow extends javax.swing.JFrame implements Table.Listener {
     private Table table;
     
     private List<AgentWindow> windows;
-    
-    private JLabel overlay;
     
     /**
      * Creates new form MainWindow
@@ -66,18 +66,14 @@ public class MainWindow extends javax.swing.JFrame implements Table.Listener {
     @Override
     public void tableHasWinner(Table table, Agent agent)
     {
-        overlay.setText(agent + " has won");
+        overlayText.setText(agent + " has won");
         overlay.setVisible(true);
     }
     
     private void initOverlay()
     {
-        overlay = new JLabel();
         setGlassPane(overlay);
         
-        overlay.setFont(overlay.getFont().deriveFont(40.0f));
-        overlay.setOpaque(true);
-        overlay.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         overlay.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
@@ -95,8 +91,44 @@ public class MainWindow extends javax.swing.JFrame implements Table.Listener {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        overlay = new javax.swing.JPanel();
+        overlayText = new javax.swing.JLabel();
+        overlayHint = new javax.swing.JLabel();
         agentsPanel = new javax.swing.JPanel();
         nextButton = new javax.swing.JButton();
+
+        overlay.setPreferredSize(null);
+
+        overlayText.setFont(new java.awt.Font("Lucida Grande", 0, 36)); // NOI18N
+        overlayText.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        overlayText.setText("Agent X has won");
+
+        overlayHint.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        overlayHint.setText("Click to continue");
+        overlayHint.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        overlayHint.setMaximumSize(null);
+        overlayHint.setMinimumSize(null);
+
+        org.jdesktop.layout.GroupLayout overlayLayout = new org.jdesktop.layout.GroupLayout(overlay);
+        overlay.setLayout(overlayLayout);
+        overlayLayout.setHorizontalGroup(
+            overlayLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(overlayLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(overlayLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(overlayText, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(overlayHint, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        overlayLayout.setVerticalGroup(
+            overlayLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(overlayLayout.createSequentialGroup()
+                .addContainerGap()
+                .add(overlayText, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                .add(overlayHint, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 243, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Ezelen");
@@ -120,14 +152,14 @@ public class MainWindow extends javax.swing.JFrame implements Table.Listener {
                     .add(agentsPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(layout.createSequentialGroup()
                         .add(nextButton)
-                        .add(0, 663, Short.MAX_VALUE)))
+                        .add(0, 227, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(agentsPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 495, Short.MAX_VALUE)
+                .add(agentsPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(nextButton)
                 .addContainerGap())
@@ -143,5 +175,8 @@ public class MainWindow extends javax.swing.JFrame implements Table.Listener {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel agentsPanel;
     private javax.swing.JButton nextButton;
+    private javax.swing.JPanel overlay;
+    private javax.swing.JLabel overlayHint;
+    private javax.swing.JLabel overlayText;
     // End of variables declaration//GEN-END:variables
 }

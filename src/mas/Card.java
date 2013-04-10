@@ -5,10 +5,9 @@
 package mas;
 
 import java.awt.Image;
-import java.io.File;
-import java.io.IOException;
+import java.awt.Toolkit;
+import java.net.URL;
 import java.util.ArrayList;
-import javax.imageio.ImageIO;
 
 /**
  *
@@ -88,14 +87,8 @@ public class Card {
     public Image getImage()
     {
         if (image == null) {
-            File imageFile = new File("assets/images/" + getCode() + ".png");
-        
-            try {
-                image = ImageIO.read(imageFile);
-            } catch (IOException e) {
-                System.err.println(e.toString() + imageFile.toString());
-                // do something intelligent.
-            }
+            URL imageurl = getClass().getResource("/images/" + getCode() + ".png");//assuming your package name is images 
+            image = Toolkit.getDefaultToolkit().getImage(imageurl);
         }
         
         return image;
