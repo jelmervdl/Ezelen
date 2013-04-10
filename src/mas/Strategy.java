@@ -4,7 +4,9 @@
  */
 package mas;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,35 +36,15 @@ public class Strategy
         else
             changeStrategy(model, hand);
         
-//        turnsSinceLastChange++;
-        
-        // Choose which card to pass on to the next player
-        Card.Type lastReceivedType = model.getLastReceivedType();
         Card chosenCard = null;
         
-        if (lastReceivedType != null && lastReceivedType != collectedType)
-        {
-            for (Card card : hand) {
-                if (card.getType() == lastReceivedType) {
-                    chosenCard = card;
-                    break;
-                }
-            }
-        }
-        
-        // If the last received type is the collected type, choose a card at random
-        // Of if the lastReceivedType was "wrong" (e.g. none received) and it was
-        // not in my hand, choose a random card as well.
-        if (chosenCard == null)
-        {
-            for (Card card : hand) 
-            {
-                if (card.getType() != collectedType) {
-                    chosenCard = card;
-                    break;
-                }
-            }
-        }
+        // Choose the card that I'm not collecting and that is most likely also
+        // not collected by others.
+        for (Card card : hand)
+            if (card.getType() != collectedType && (chosenCard == null
+                        || model.likelyhoodIsCollected(card.getType()) < model.likelyhoodIsCollected(chosenCard.getType())))
+                chosenCard = card;
+                
         
         assert chosenCard != null : "I did not choose a card";
         
@@ -88,6 +70,8 @@ public class Strategy
         
         // An other strategy may be to start teasing one of the other players,
         // as model may know the strategy of one or moreof the other players.
+        // This is already done by choosing a card that is most likely not
+        // collected.
     }
     
     public void changeStrategy(Set<Card> hand)

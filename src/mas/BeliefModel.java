@@ -91,6 +91,11 @@ public class BeliefModel
         return history[(historyPos - 1) % historySize];
     }
     
+    public int likelyhoodIsCollected(Card.Type type)
+    {
+        return collected.get(type);
+    }
+    
     @Override
     public String toString()
     {
