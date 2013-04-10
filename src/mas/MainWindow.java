@@ -97,8 +97,6 @@ public class MainWindow extends javax.swing.JFrame implements Table.Listener {
         agentsPanel = new javax.swing.JPanel();
         nextButton = new javax.swing.JButton();
 
-        overlay.setPreferredSize(null);
-
         overlayText.setFont(new java.awt.Font("Lucida Grande", 0, 36)); // NOI18N
         overlayText.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         overlayText.setText("Agent X has won");
@@ -109,24 +107,24 @@ public class MainWindow extends javax.swing.JFrame implements Table.Listener {
         overlayHint.setMaximumSize(null);
         overlayHint.setMinimumSize(null);
 
-        org.jdesktop.layout.GroupLayout overlayLayout = new org.jdesktop.layout.GroupLayout(overlay);
+        javax.swing.GroupLayout overlayLayout = new javax.swing.GroupLayout(overlay);
         overlay.setLayout(overlayLayout);
         overlayLayout.setHorizontalGroup(
-            overlayLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(overlayLayout.createSequentialGroup()
+            overlayLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(overlayLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(overlayLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(overlayText, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(overlayHint, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(overlayLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(overlayText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(overlayHint, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         overlayLayout.setVerticalGroup(
-            overlayLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(overlayLayout.createSequentialGroup()
+            overlayLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(overlayLayout.createSequentialGroup()
                 .addContainerGap()
-                .add(overlayText, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(overlayHint, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 243, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addComponent(overlayText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(overlayHint, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -142,26 +140,26 @@ public class MainWindow extends javax.swing.JFrame implements Table.Listener {
             }
         });
 
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(agentsPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(layout.createSequentialGroup()
-                        .add(nextButton)
-                        .add(0, 227, Short.MAX_VALUE)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(agentsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(nextButton)
+                        .addGap(0, 227, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(layout.createSequentialGroup()
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .add(agentsPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(nextButton)
+                .addComponent(agentsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(nextButton)
                 .addContainerGap())
         );
 
