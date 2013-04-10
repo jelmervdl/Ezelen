@@ -1,0 +1,63 @@
+body {
+	font-size: 18px;
+}
+
+img {
+	max-width: 100%;
+}
+
+a {
+	color: #393839;
+}
+
+nav {
+	margin: 0 auto;
+	max-width: 60em;
+	background: #393839;
+	color: white;
+}
+
+nav ul {
+	padding: 0;
+	list-style: none;
+	margin: 0;
+}
+
+nav li {
+	display: inline;
+}
+
+nav a {
+	display: inline-block;
+	text-decoration: none;
+	color: inherit;
+	padding: 1em;
+}
+
+nav a:hover {
+	background: gray;
+}
+
+body {
+	margin: 0 auto;
+	padding: 1em;
+	max-width: 60em;
+}
+
+h1 {
+	font-size: 400%;
+}
+
+h1 small {
+	font-style: italic;
+}
+
+figure {
+	margin: 1em 0;
+	padding: 2em;
+}
+
+footer {
+	border-top: 1px solid #393839;
+	text-align: center;
+}

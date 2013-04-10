@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>Ezelen - a Multi-agent Systems project</title>
+		<link rel="stylesheet" href="makeup.css">
+		<link rel="shortcut icon" href="donkey.png">
+		<link rel="apple-touch-icon" href="donkey.png">
+	</head>
+	<body>
+		<header>
+			<h1>Ezelen <small>a Multi-agent systems project</small></h1>
+			<p class="authors">By <a href="mailto:jelmer@ikhoefgeen.nl">Jelmer van der Linde</a> &amp; <a href="mailto:doesburg.inge@gmail.com">Inge Doesburg</a></p>
+		</header>
+
+		<nav>
+			<ul>
+				<li><a href="#the-game">The Game</a></li>
+				<li><a href="#the-program">The Program</a></li>
+				<li><a href="#knowledge-and-strategies">Knowledge &amp; Strategies</a>
+				<li><a href="#kripke">Kripke Models</a></li>
+				<li><a href="#implementation">Implementation</a></li>
+				<li><a href="#download">Download &amp; Play</a></li>
+			</ul>
+		</nav>
+
+		<section class="content">
+			<h2 id="the-game">The Game</h2>
+			<p>The game is called “Ezelen” and can be played with four friends. From all 52 cards in the deck 16 cards are selected, namely all suits (Diamonds, Clubs, Hearts and Spades) of the four different types: Aces, Kings, Queens and Jacks. These will be the cards used when playing Ezelen. The cards are shuffled and distributed over the four players.</p>
+			<p>The goal of every player is to collect four cards of the same type. At every round the players give one of their four cards to their right-hand neighbour and receive a card from their left-hand neighbour. Different strategies can be used in this game. Some will help the player collect four cards of the same type and some will also make it difficult for other players to collect four cards of the same type.</p>
+
+			<h2 id="the-program">The Program</h2>
+			<p>The program has been written in Java using the Netbeans IDE.  The program creates four agents with their own knowledge model and distributes the cards over the four agents.</p>
+
+			<figure>
+				<img src="Screenshot.png">
+				<caption>The text boxes show the knowledge and beliefs of each agent. The numbers next to the predicate knowledge show in which turn the knowledge was added to the model. Below the text boxes, the hand of the agent is shown, and the card it has just received has a blue border.</caption>
+			</figure>
+
+			<p>In figure 1 the interface of Ezelen is presented. There are four agents, each with their four cards and their own knowledge screen. By pressing the Next button all four agents will choose a card to give to their right-hand neighbour.</p>
+
+			<h2 id="knowledge-and-strategies">Knowledge &amp; Strategies</h2>
+			<p>For the game of Ezelen it is useful to keep track of which players could have which cards to determine who is collecting cards of a certain rank. The player can then choose to start collecting a different rank of cards, or try to sabotage the other player's efforts. With the knowledge the agent has about its own cards, the other cards and where they might be, the agent constructs certain beliefs. It constructs beliefs, because it cannot know for sure where the cards that it needs are. With these beliefs it constructs its goals; situations it desires to be in. With these goals and beliefs the agents has certain intentions.</p>
+
+			<p>Every agent has its own knowledge and belief model. These models contain all the things the agent knows to be true and what it considers to be possible. These “things” can be were a certain card is and what the strategy might be of all the other agents. The agent uses both models together to decide what its strategy will be in this round. In the image below you can see the belief model. In every state an agent has a certain belief about which type of card is being collected and which is not.</p>
+
+			<p>Every agent also tries to model the beliefs of the other agents about itself by looking at the cards it is passing on. This second degree knowledge could have been used to try to fool the other players so they cannot determine the agent its strategy. In the game of Ezelen, where the individual games often do not take more than a few rounds, we did not find it helpful in reaching the agents goal. Therefore, the agent does not use this knowledge to determine its strategy.</p>
+
+			<figure>
+				<img src="BeliefModel.png">
+				<caption>Belief model of the agent. Each T or F stands for that type of card being collected or not, ordered as follows: Ace, Kings, Queens, Jacks. The arrows show which state can be reached from other states. The partitions for each round show which part of the belief model is being used given the number of rounds the agent holds on to its beliefs about which card is being collected and which is not.</caption>
+			</figure>
+
+			<h2 id="kripke">Possible Kripke Models</h2>
+			<p>We have considered a few different Kripke models to use in our description and implementation.</p>
+
+			<p>One possibility is to keep track of all the agents, and all the cards they may have. Quite a few states can be left out, as they are impossible to reach. E.g. states in which two players have the same card. Doing so, this would still result in <code>C(16,4) &times; C(12,4) &times; C(8,4) = 63.063.000</code> states. We wanted to keep an overview of the global state, and this would not have been possible with this many states. It would also would have been too many to use in our actual implementation. Besides, as the game progresses we cannot exclude the possibility of being in a number of different states as we cannot observe what the agent next to our neighbour is doing.</p>
+
+			<p>Another possibility is to keep track of the strategy of every agent. The strategy in this case is what type of card each agent is collecting at this round. This would result in <code>4&times;4&times;4&times;4 = 256</code> states. The amount of states is considerably smaller than the amount of the previous kripke model. Nevertheless, it is not optimal to keep track of every agents individual strategy, because you still can't tell for certain which agent has which strategy, also taking into account that the agent may change its strategy at any moment. Therefore, we have chosen the kripke model descrived above. In this model we keep track of the strategies of all the other agents combined. This results in a much more manageable 16 states. </p>
+
+			<h2 id="implementation">Implementation</h2>
+			<p>At the start of the game, every player only knows for certain which cards it has, which cards there are in the game, that every card is only possessed by one player, and that each player has precisely four cards. The first strategy used by an agent is chosen solely on what the agent knows about its own cards. After the first round, the agent decides which card to collect using the following rules:</p>
+			<ul>
+				<li>When the agent has three cards of the same type in its hand, it will collect this type. Unless it has been doing so for the previous eight rounds.</li>
+				<!--<li>Otherwise, if the agent has no knowledge nor beliefs about the other players (i.e. the first round of the game) it will start collecting the type of which it has the most cards. If the agent has an equal amount of different types, it will pick the first in its hand.</li>-->
+				<li>Otherwise, the agent will start to collect the type that is the most likely not being collected by other agents, according to its own belief model, and will keep this strategy for the next two rounds.</li>
+			</ul>
+
+			<p>Every agent keeps track of which cards were given to it by its left-hand neighbour in the last four rounds. This knowledge is used to determine which type of card is most likely not collected. If the agent's path to its goal has not improved over the last two or eight rounds, it checks which type of card were given to it the most and it will change its strategy to collecting that type of card. This is a logical decision, because the agent can conclude that if it has not received that particular type of card, another agent must be collecting this type as well.</p>
+
+			<p>It is also important that the agent considers which card to pass on to its neighbour. It does so by using these rules:<p>
+
+			<ul>
+				<li>If the agent has no knowledge nor beliefs about the other players, it will pass on the first card in its hand that is not of the type it is collecting.</li>
+				<li>Otherwise, it will pass on the card of the type it is not collecting and is most likely not collected by the other players according to the agent its beliefs.</li>
+			</ul>
+
+			<p>By passing on the card that is most likely not collected by any other agent, the agent tries to annoy the other players and prevent them from reaching their goal.</p>
+
+
+			<h2 id="download">Download &amp; Play</h2>
+			<p>The source code is available <a href="https://github.com/jelmervdl/ezelen">on Github</a> and as <a href="MAS.zip">a ZIP archive</a> or <a href="MAS.jar">a runnable JAR archive</a>.</p>
+
+			<!--
+			<h2 id="future-endeavours">Future endeavours</h2>
+			<p>What we would like to add to the program in the next two weeks:</p>
+			<ul>
+				<li>Give the agent the choice of teasing the other agents. This can be done by having the agent commit to their strategy when they conclude that another agent is collecting the same type of cards. When the agent keeps collecting the same type of card, he believes that the other agent who is collecting the same cards cannot reach its goal. Unless of course the other agent changes its strategy.</li>
+				<li>Make sure that not all agents change their strategy at the same time. Some may change them after four rounds, others after five rounds.</li>
+				<li>When an agent is collecting cards from a certain type and it has two of this type in its hand, he will give one of the other two cards to its right-hand neighbour. Now the agent will always give the card away that is the first available card from the left part of its hand. We want this to be a random choice.</li>
+				<li>Show every agents' knowledge, beliefs and intentions on its knowledge screen in the interface.</li>
+				<li>Add a log to the interface. This log presents the choices made by the agents. For instance, “Agent 1 changed its strategy from collecting Kings to Aces, because of..&lt;knowledge&gt;” This makes it easier for the viewer to understand how the agent is using its knowledge to change its strategy.</li>
+				<li>Show more clearly in the interface which card is passed on by the agents.</li>
+				<li>Show who won this round and give the others the next letter of the word “Ezel”.</li>
+			</ul>
+			-->
+		</section>
+
+		<footer>
+			<p>2013</p>
+		</footer>
+	</body>
+</html>
+
+
